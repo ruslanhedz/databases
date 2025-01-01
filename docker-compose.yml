@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  master:
+    image: mysql:8.0
+    container_name: master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MASTER_ROOT_PASS}
+      MYSQL_DATABASE: ${MASTER_DB_NAME}
+      MYSQL_USER: ${MASTER_DB_USER}
+      MYSQL_PASSWORD: ${MASTER_DB_PASSWORD}
+    command: --server-id=1
+    volumes:
+      - master_data:/var/lib/mysql
+      - ./init/master.sql:/docker-entrypoint-initdb.d/master.sql
+    networks:
+      - mysql_net
+    ports:
+      - "9936:3306"
+
+  slave:
+    image: mysql:8.0
+    container_name: slave
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SLAVE_ROOT_PASS}
+      MYSQL_DATABASE: ${SLAVE_DB_NAME}
+      MYSQL_USER: ${SLAVE_DB_USER}
+      MYSQL_PASSWORD: ${SLAVE_DB_PASSWORD}
+    command: --server-id=2 --read-only=1
+    volumes:
+      - slave_data:/var/lib/mysql
+      - ./init/slave.sql:/docker-entrypoint-initdb.d/slave.sql
+
+    networks:
+      - mysql_net
+    ports:
+      - "9946:3306"
+
+volumes:
+  master_data:
+  slave_data:
+
+networks:
+  mysql_net:
