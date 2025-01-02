@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'reg_log',
     'rest_framework',
     'corsheaders',
+    'mysql_ssl'
 ]
 
 MIDDLEWARE = [
@@ -93,6 +94,11 @@ DATABASES = {
         'PASSWORD': os.getenv('MASTER_DB_PASSWORD'),
         'HOST': os.getenv('MASTER_DB_HOST'),
         'PORT': os.getenv('MASTER_DB_PORT'),
+        'OPTIONS': {
+            'ssl': {
+                'ca': '../init/certs/master/ca.pem'
+            },
+        },
     },
     'slave': {
         'ENGINE': 'django.db.backends.mysql',
@@ -101,6 +107,11 @@ DATABASES = {
         'PASSWORD': os.getenv('SLAVE_DB_PASSWORD'),
         'HOST': os.getenv('SLAVE_DB_HOST'),
         'PORT': os.getenv('SLAVE_DB_PORT'),
+        'OPTIONS': {
+            'ssl': {
+                'ca': '../init/certs/slave/ca.pem'
+            },
+        },
     },
 }
 

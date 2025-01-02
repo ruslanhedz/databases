@@ -2,6 +2,7 @@ Django
 djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
+django-mysql-ssl
 mysqlclient
 python-dotenv
 six
