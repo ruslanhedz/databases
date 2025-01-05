@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api';
+import { Button, Form, Container, Alert } from 'react-bootstrap';
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -7,54 +8,99 @@ const SignUp = () => {
         email: '',
         password: '',
     });
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validate password match
+        if (formData.password !== confirmPassword) {
+            setError('Passwords do not match');
+            setSuccess(null);
+            return;
+        }
+
         try {
             const response = await api.post('/signup/', formData);
-            setMessage(response.data.message);
+            setSuccess(response.data.message);
+            setError(null);
         } catch (error) {
-            setMessage(error.response.data.error || 'Something went wrong.');
+            setError(error.response?.data?.error || 'Something went wrong.');
+            setSuccess(null);
         }
     };
 
     return (
-        <div>
-            <h1>Sign Up</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                />
-                <button type="submit">Sign Up</button>
-            </form>
-            {message && <p>{message}</p>}
-        </div>
+        <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+            <Form onSubmit={handleSubmit} className="w-50">
+                <h2 className="mb-4">Register</h2>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {success && <Alert variant="success">{success}</Alert>}
+
+                <Form.Group controlId="formBasicUsername" className="mb-3">
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control
+                        type="text"
+                        name="username"
+                        placeholder="Enter your username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="formBasicEmail" className="mb-3">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="formBasicPassword" className="mb-3">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="formBasicConfirmPassword" className="mb-3">
+                    <Form.Label>Confirm Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={handleConfirmPasswordChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="w-100">
+                    Register
+                </Button>
+            </Form>
+        </Container>
     );
 };
 

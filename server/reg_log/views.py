@@ -9,6 +9,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.sites.shortcuts import get_current_site
 from .tokens import account_activation_token
 from django.conf import settings
+from django.http import JsonResponse
 
 class SignUpView(APIView):
     def post(self, request):
@@ -64,3 +65,8 @@ class LoginView(APIView):
                 'access': str(refresh.access_token),
             })
         return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class LogOutView(APIView):
+    def post(self, request):
+        response = JsonResponse({'message': 'Logged out successfully'})
+        return response
