@@ -7,7 +7,6 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MASTER_ROOT_PASS}
-      MYSQL_DATABASE: ${MASTER_DB_NAME}
       MYSQL_USER: ${MASTER_DB_USER}
       MYSQL_PASSWORD: ${MASTER_DB_PASSWORD}
     command: --server-id=1
@@ -25,7 +24,6 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${SLAVE_ROOT_PASS}
-      MYSQL_DATABASE: ${SLAVE_DB_NAME}
       MYSQL_USER: ${SLAVE_DB_USER}
       MYSQL_PASSWORD: ${SLAVE_DB_PASSWORD}
     command: --server-id=2 --read-only=1
