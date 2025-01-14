@@ -18,14 +18,14 @@ const Login = ({ setIsLoggedIn }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/login/', formData);
+            const response = await api.post('/api/token/', formData);
             localStorage.setItem('access', response.data.access);
             localStorage.setItem('refresh', response.data.refresh);
             setIsLoggedIn(true); // Update login state
             setMessage('Login successful!');
             setTimeout(() => navigate('/home'), 1000); // Redirect after 1 second
         } catch (error) {
-            setMessage(error.response?.data?.error || 'Invalid credentials.');
+            setMessage(error.response?.data?.detail || 'Invalid credentials.');
         }
     };
 

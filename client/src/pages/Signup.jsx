@@ -1,53 +1,43 @@
 import React, { useState } from 'react';
 import api from '../api';
-import { Button, Form, Container, Alert } from 'react-bootstrap';
+import { Button, Form, Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
-const SignUp = () => {
+const Signup = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
-        password: '',
+        password1: '',
+        password2: '',
     });
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Validate password match
-        if (formData.password !== confirmPassword) {
-            setError('Passwords do not match');
-            setSuccess(null);
-            return;
-        }
-
         try {
-            const response = await api.post('/signup/', formData);
-            setSuccess(response.data.message);
-            setError(null);
+            const response = await api.post('/auth/register/', formData);
+            setMessage('Registration successful! Please check your email to activate your account.');
+            setTimeout(() => navigate('/login'), 3000);
         } catch (error) {
-            setError(error.response?.data?.error || 'Something went wrong.');
-            setSuccess(null);
+            setMessage(error.response?.data?.error || 'Registration failed.');
         }
     };
 
     return (
         <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
             <Form onSubmit={handleSubmit} className="w-50">
-                <h2 className="mb-4">Register</h2>
-                {error && <Alert variant="danger">{error}</Alert>}
-                {success && <Alert variant="success">{success}</Alert>}
+                <h2 className="mb-4">SIGN UP</h2>
+
+                {message && (
+                    <div className={`alert ${message.includes('successful') ? 'alert-success' : 'alert-danger'}`}>
+                        {message}
+                    </div>
+                )}
 
                 <Form.Group controlId="formBasicUsername" className="mb-3">
                     <Form.Label>Username</Form.Label>
@@ -73,25 +63,26 @@ const SignUp = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formBasicPassword" className="mb-3">
+                <Form.Group controlId="formBasicPassword1" className="mb-3">
                     <Form.Label>Password</Form.Label>
                     <Form.Control
                         type="password"
-                        name="password"
+                        name="password1"
                         placeholder="Enter your password"
-                        value={formData.password}
+                        value={formData.password1}
                         onChange={handleChange}
                         required
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formBasicConfirmPassword" className="mb-3">
+                <Form.Group controlId="formBasicPassword2" className="mb-3">
                     <Form.Label>Confirm Password</Form.Label>
                     <Form.Control
                         type="password"
+                        name="password2"
                         placeholder="Confirm your password"
-                        value={confirmPassword}
-                        onChange={handleConfirmPasswordChange}
+                        value={formData.password2}
+                        onChange={handleChange}
                         required
                     />
                 </Form.Group>
@@ -104,4 +95,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default Signup;

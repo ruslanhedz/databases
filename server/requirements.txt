@@ -6,3 +6,6 @@ django-mysql-ssl
 mysqlclient
 python-dotenv
 six
+django-allauth
+requests
+cryptography

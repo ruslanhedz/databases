@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import NotFound from "./pages/NotFound.jsx";
 import Home from "./pages/Home.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
+import Activate from "./pages/Activate.jsx";
 
 function Logout({ setIsLoggedIn }) {
     localStorage.clear();
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
                 <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/activate/:uid/:token" element={<Activate />} />
                 <Route path="/logout" element={<Logout setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/*" element={<NotFound />} />
             </Routes>
