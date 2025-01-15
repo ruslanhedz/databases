@@ -5,26 +5,41 @@ from allauth.account.utils import setup_user_email
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import UserProfile
 
-class RegisterSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    username = serializers.CharField(required=True)
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['role']
+
+class RegisterSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
+    role = serializers.ChoiceField(choices=[('adopter', 'Adopter'), ('shelter', 'Shelter')], write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'password1', 'password2', 'role']
 
     def validate(self, data):
+        # Check if passwords match
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError("Passwords do not match")
+            raise serializers.ValidationError("Passwords do not match.")
         return data
 
     def create(self, validated_data):
-        user = User(
-            email=validated_data['email'],
-            username=validated_data['username']
-        )
-        user.set_password(validated_data['password1'])
-        user.is_active = False  # Deactivate account until it is confirmed
+        # Extract the role and passwords from validated_data
+        role = validated_data.pop('role')
+        password = validated_data.pop('password1')
+        validated_data.pop('password2')
+
+        # Create the user
+        user = User.objects.create_user(**validated_data, password=password)
+        user.is_active = False  # Deactivate account until email confirmation
         user.save()
+
+        # Create the UserProfile instance with the role
+        UserProfile.objects.create(user=user, role=role)
 
         # Generate token
         token = default_token_generator.make_token(user)
@@ -43,3 +58,4 @@ class RegisterSerializer(serializers.Serializer):
         )
 
         return user
+

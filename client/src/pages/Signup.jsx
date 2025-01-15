@@ -7,6 +7,7 @@ const Signup = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
+        role: '',
         password1: '',
         password2: '',
     });
@@ -20,6 +21,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log(formData);
             const response = await api.post('/auth/register/', formData);
             setMessage('Registration successful! Please check your email to activate your account.');
             setTimeout(() => navigate('/login'), 3000);
@@ -61,6 +63,21 @@ const Signup = () => {
                         onChange={handleChange}
                         required
                     />
+                </Form.Group>
+
+                <Form.Group controlId="formBasicRole" className="mb-3">
+                    <Form.Label>Role</Form.Label>
+                    <Form.Control
+                        as="select"
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select your role</option>
+                        <option value="shelter">Shelter</option>
+                        <option value="adopter">Adopter</option>
+                    </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId="formBasicPassword1" className="mb-3">
