@@ -19,8 +19,17 @@ const Login = ({ setIsLoggedIn }) => {
         e.preventDefault();
         try {
             const response = await api.post('/api/token/', formData);
-            localStorage.setItem('access', response.data.access);
-            localStorage.setItem('refresh', response.data.refresh);
+            sessionStorage.setItem('access', response.data.access);
+            sessionStorage.setItem('refresh', response.data.refresh);
+
+            // Fetch user's profile to get the role
+            const profileResponse = await api.get('/api/user/profile/', {
+                headers: {
+                    Authorization: `Bearer ${response.data.access}`,
+                },
+            });
+            sessionStorage.setItem('role', profileResponse.data.role);
+
             setIsLoggedIn(true); // Update login state
             setMessage('Login successful!');
             setTimeout(() => navigate('/home'), 1000); // Redirect after 1 second

@@ -17,7 +17,17 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework import generics
 from django.shortcuts import get_object_or_404
 from .models import UserProfile
+from rest_framework.permissions import IsAuthenticated
+from .serializers import UserProfileSerializer
 
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile = UserProfile.objects.get(user=request.user)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]

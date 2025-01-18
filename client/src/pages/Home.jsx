@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const animals = [
     {
@@ -65,6 +66,33 @@ const animals = [
 ];
 
 const AnimalAdoption = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userRole, setUserRole] = useState(null);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('access');
+        const role = sessionStorage.getItem('role');
+        setIsLoggedIn(!!token);
+        setUserRole(role);
+    }, [location]); // Triggers re-check whenever location changes (e.g., after login)
+
+    const handleAdopt = (animalId) => {
+        if (!isLoggedIn) {
+            alert('Please log in to adopt an animal.');
+            navigate('/login');
+        } else if (userRole === 'shelter') {
+            alert('Shelters cannot adopt animals.');
+        } else {
+            alert(`Animal ${animalId} adoption request submitted.`);
+        }
+    };
+
+    const handleLearnMore = (animalId) => {
+        navigate(`/animal/${animalId}`);
+    };
+
     return (
         <Container className="my-5">
             <h2 className="text-center mb-4">Zwierzęta do Adopcji</h2>
