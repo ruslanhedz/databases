@@ -27,11 +27,12 @@ function App() {
     const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-        const token = sessionStorage.getItem('access'); // Checking for the access token
-        const role = sessionStorage.getItem('role'); // Get the user's role
+        // Re-check if user is logged in after state changes (for a more immediate update)
+        const token = sessionStorage.getItem('access');
+        const role = sessionStorage.getItem('role');
         setIsLoggedIn(!!token);
         setUserRole(role);
-    }, []);
+    }, [isLoggedIn]);
 
     return (
         <Router>
@@ -67,7 +68,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<WelcomePage />} />
                 <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
-                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/activate/:uid/:token" element={<Activate />} />
                 <Route path="/logout" element={<Logout setIsLoggedIn={setIsLoggedIn} />} />

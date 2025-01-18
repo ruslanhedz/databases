@@ -3,7 +3,7 @@ import api from '../api';
 import { Button, Form, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, setUserRole }) => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -31,6 +31,7 @@ const Login = ({ setIsLoggedIn }) => {
             sessionStorage.setItem('role', profileResponse.data.role);
 
             setIsLoggedIn(true); // Update login state
+            setUserRole(response.data.role);
             setMessage('Login successful!');
             setTimeout(() => navigate('/home'), 1000); // Redirect after 1 second
         } catch (error) {
