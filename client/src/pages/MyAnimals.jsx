@@ -21,48 +21,6 @@ const animals = [
         description: '//',
         image: '//',
     },
-    {
-        id: 4,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
-    {
-        id: 5,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
-    {
-        id: 6,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
-    {
-        id: 7,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
-    {
-        id: 8,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
-    {
-        id: 9,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
-    {
-        id: 10,
-        name: 'Charlie',
-        description: '//',
-        image: '//',
-    },
 ];
 
 const AnimalAdoption = () => {
