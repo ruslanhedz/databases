@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 const animals = [
     {

@@ -7,32 +7,21 @@ import Signup from './pages/Signup';
 import NotFound from "./pages/NotFound.jsx";
 import Home from "./pages/Home.jsx";
 import WelcomePage from "./pages/WelcomePage.jsx";
-import Activate from "./pages/Activate.jsx";
-import MyAnimals from "./pages/MyAnimals.jsx";
-import AdoptionRequests from "./pages/AdoptionRequests.jsx";
-import MyRequests from "./pages/MyRequests.jsx";
+import AddPosition from "./pages/AddPosition.jsx";
 
 function Logout({ setIsLoggedIn }) {
-    useEffect(() => {
-        localStorage.clear(); // Clear local storage
-        sessionStorage.clear(); // Clear session storage if used
-        setIsLoggedIn(false); // Set logged-in state to false
-    }, [setIsLoggedIn]); // Ensure dependency is correct
-
+    localStorage.clear();
+    setIsLoggedIn(false);
     return <Navigate to="/login" />;
 }
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
-        // Re-check if user is logged in after state changes (for a more immediate update)
-        const token = sessionStorage.getItem('access');
-        const role = sessionStorage.getItem('role');
+        const token = localStorage.getItem('access'); // Checking for the access token
         setIsLoggedIn(!!token);
-        setUserRole(role);
-    }, [isLoggedIn]);
+    }, []);
 
     return (
         <Router>
@@ -44,15 +33,6 @@ function App() {
                         {isLoggedIn ? (
                             <>
                                 <Nav.Link as={Link} to="/home" className="text-dark">Home</Nav.Link>
-                                {userRole === 'shelter' && (
-                                    <>
-                                        <Nav.Link as={Link} to="/my-animals" className="text-dark">My Animals</Nav.Link>
-                                        <Nav.Link as={Link} to="/adoption-requests" className="text-dark">Adoption Requests</Nav.Link>
-                                    </>
-                                )}
-                                {userRole === 'adopter' && (
-                                    <Nav.Link as={Link} to="/my-requests" className="text-dark">My Requests</Nav.Link>
-                                )}
                                 <Nav.Link as={Link} to="/logout" className="text-dark">Log Out</Nav.Link>
                             </>
                         ) : (
@@ -68,13 +48,10 @@ function App() {
             <Routes>
                 <Route path="/" element={<WelcomePage />} />
                 <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
-                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} />} />
+                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/activate/:uid/:token" element={<Activate />} />
                 <Route path="/logout" element={<Logout setIsLoggedIn={setIsLoggedIn} />} />
-                <Route path="/my-animals" element={userRole === 'shelter' ? <MyAnimals /> : <Navigate to="/home" />} />
-                <Route path="/adoption-requests" element={userRole === 'shelter' ? <AdoptionRequests /> : <Navigate to="/home" />} />
-                <Route path="/my-requests" element={userRole === 'adopter' ? <MyRequests /> : <Navigate to="/home" />} />
+                <Route path="/add" element={<AddPosition/>} />
                 <Route path="/*" element={<NotFound />} />
             </Routes>
         </Router>
