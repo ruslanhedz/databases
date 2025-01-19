@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MASTER_ROOT_PASS}
       MYSQL_USER: ${MASTER_DB_USER}
       MYSQL_PASSWORD: ${MASTER_DB_PASSWORD}
-    command: --server-id=1
+    command: --server-id=1 --default-authentication-plugin=mysql_native_password
     volumes:
       - master_data:/var/lib/mysql
       - ./init/master.sql:/docker-entrypoint-initdb.d/master.sql
@@ -26,7 +26,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${SLAVE_ROOT_PASS}
       MYSQL_USER: ${SLAVE_DB_USER}
       MYSQL_PASSWORD: ${SLAVE_DB_PASSWORD}
-    command: --server-id=2 --read-only=1
+    command: --server-id=2 --read-only=1 --default-authentication-plugin=mysql_native_password
     volumes:
       - slave_data:/var/lib/mysql
       - ./init/slave.sql:/docker-entrypoint-initdb.d/slave.sql
@@ -36,9 +36,51 @@ services:
     ports:
       - "9946:3306"
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "127.0.0.1:9000:9000"                     # Порт для API
+      - "127.0.0.1:9001:9001"                     # Порт для панели управления MinIO
+    command: server /data --console-address ":9001"
+    networks:
+      - mysql_net
+
+  mc:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (mc alias set local http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}) do sleep 5; done &&
+      mc mb local/${MINIO_BUCKET_NAME}"
+    networks:
+      - mysql_net
+
+  backup:
+    image: alpine:latest
+    container_name: backup
+    volumes:
+      - mysql_backup:/backup
+      - ./keyfile.key:/keyfile.key
+      - ./backup.sh:/backup.sh
+      - ./startup.sh:/startup.sh
+    environment:
+      - SCHEDULE=@daily
+    entrypoint: /bin/sh -c "/startup.sh && crond -f"
+    networks:
+      - mysql_net
+
 volumes:
   master_data:
   slave_data:
+  minio_data:
+  mysql_backup:
 
 networks:
   mysql_net:
