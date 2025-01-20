@@ -66,11 +66,16 @@ const animals = [
 ];
 
 const AnimalAdoption = () => {
+    const navigate = useNavigate();
+    const handleAddAnimal = () => {
+        navigate('/add-animal');
+    }
+
     return (
         <Container className="my-5">
             <h2 className="text-center mb-4">Twoje zwierzęta</h2>
             <div style={{ margin: '1rem' }}>
-            <Button variant="outline-primary">Dodaj zwierzę</Button>
+                <Button variant="outline-primary" onClick={handleAddAnimal}>Dodaj zwierzę</Button>
             </div>
             <Row>
                 {animals.map((animal) => (

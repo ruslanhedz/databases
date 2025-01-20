@@ -11,6 +11,7 @@ import Activate from "./pages/Activate.jsx";
 import MyAnimals from "./pages/MyAnimals.jsx";
 import AdoptionRequests from "./pages/AdoptionRequests.jsx";
 import MyRequests from "./pages/MyRequests.jsx";
+import AddPosition from "./pages/AddPosition.jsx";
 
 function Logout({ setIsLoggedIn }) {
     useEffect(() => {
@@ -75,6 +76,7 @@ function App() {
                 <Route path="/my-animals" element={userRole === 'shelter' ? <MyAnimals /> : <Navigate to="/home" />} />
                 <Route path="/adoption-requests" element={userRole === 'shelter' ? <AdoptionRequests /> : <Navigate to="/home" />} />
                 <Route path="/my-requests" element={userRole === 'adopter' ? <MyRequests /> : <Navigate to="/home" />} />
+                <Route path="/add-animal" element={<AddPosition />} />
                 <Route path="/*" element={<NotFound />} />
             </Routes>
         </Router>

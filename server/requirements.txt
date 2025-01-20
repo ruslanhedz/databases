@@ -3,9 +3,11 @@ djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
 django-mysql-ssl
+dj-rest-auth
 mysqlclient
 python-dotenv
 six
 django-allauth
 requests
 cryptography
+pillow

@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 import reg_log
+import animals_management
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('reg_log.urls')),
+    path('', include('animals_management.urls')),
 ]
