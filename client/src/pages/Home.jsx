@@ -6,7 +6,7 @@ const animals = [
         id: 1,
         name: 'Max',
         description: 'Max is a friendly dog looking for a new home.',
-        image: 'https://via.placeholder.com/150',
+        image: '/images/puppy.jpg',
     },
     {
         id: 2,
