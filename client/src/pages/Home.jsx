@@ -1,37 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../api.js'
 import { Container, Card, Button, Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'react-bootstrap';
 
-const animals = [
-    {
-        id: 1,
-        name: 'Max',
-        description: 'Max is a friendly dog looking for a new home.',
-        image: '/images/puppy.jpg',
-    },
-    {
-        id: 2,
-        name: 'Bella',
-        description: 'Bella is a calm and affectionate cat.',
-        image: 'https://via.placeholder.com/150',
-    },
-    {
-        id: 3,
-        name: 'Charlie',
-        description: 'Charlie is an energetic and playful rabbit.',
-        image: 'https://via.placeholder.com/150',
-    },
-];
-
 const AnimalAdoption = () => {
-    const [formData, setFormData] = useState({
-        image: '',
-        name: '',
-        species: '',
-        breed: '',
-        age: '',
-        sex: '',
-        description: ''
-    });
+    const [animals, setAnimals] = useState([]);
+
+    useEffect(() => {
+        api.get('/api/animals/available/', {
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('access')}`,
+            }
+        }) // Adjust the URL to your API endpoint
+            .then((response) => {
+                setAnimals(response.data);
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching animals:', error);
+            });
+    }, []);
 
     return (
         <Container className="my-5">
@@ -42,7 +29,7 @@ const AnimalAdoption = () => {
                         <Card>
                             <Card.Img
                                 variant="top"
-                                src={animal.image}
+                                src={`/images/${animal.id}.jpg`}
                                 alt={animal.name}
                                 style={{ height: '200px', objectFit: 'cover' }}
                             />
@@ -69,6 +56,15 @@ const AnimalAdoption = () => {
                                             </Dropdown.Item>
                                             <Dropdown.Item>
                                                 <strong>Sex:</strong> {animal.sex || 'Not Specified'}
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                                <strong>Status:</strong> {animal.status || 'Not Specified'}
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                                <strong>Description</strong> {animal.description || 'Not Specified'}
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                                <strong>Shelter:</strong> {animal.shelter_username || 'Not Specified'}
                                             </Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>

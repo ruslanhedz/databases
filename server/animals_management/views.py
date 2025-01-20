@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from reg_log.models import UserProfile
 from .models import Animal, Adoptions
-from .serializers import AnimalSerializer, AdoptionsSerializer
+from .serializers import AnimalSerializer, AnimalListSerializer, AdoptionsSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -35,52 +35,13 @@ class AddAnimalAPIView(APIView):
         # If validation fails, return error details
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# class UploadPhotoAPIView(APIView):
-#     parser_classes = (MultiPartParser, FormParser)
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request, *args, **kwargs):
-#         file = request.FILES.get('photo')
-#         if not file:
-#             return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-#         # Save the photo temporarily (or you can directly attach it to a model if needed)
-#         animal = Animal(photo=file, shelterId=request.user)# Only saving the file temporarily
-#         animal.save()
-#
-#         # Return the file URL
-#         return Response({'photo_url': animal.photo.url}, status=status.HTTP_201_CREATED)
-#
-# class AddAnimalAPIView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request, *args, **kwargs):
-#         serializer = AnimalSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# # Create your views here.
-# class AddAnimalView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request):
-#         user_profile = UserProfile.objects.get(user=request.user)
-#         request_data = request.data.copy()
-#         request_data['status'] = 'available'
-#         request_data['shelterId'] = user_profile.user.id
-#
-#         serializer = AnimalSerializer(data=request_data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class AvailableAnimalsView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         animals = Animal.objects.filter(status='available')
-        serializer = AnimalSerializer(animals, many=True)
+        serializer = AnimalListSerializer(animals, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class MyAnimalsView(APIView):

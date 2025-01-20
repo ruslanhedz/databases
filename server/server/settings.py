@@ -219,5 +219,5 @@ CORS_ALLOWED_ORIGINS = [
 # Allow credentials if needed (e.g., cookies or authentication headers)
 CORS_ALLOW_CREDENTIALS = True
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/public/'
+MEDIA_ROOT = os.path.join('../client', 'public')

@@ -9,7 +9,7 @@ from django.conf import settings
 def rename_photo(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"{instance.id}.{ext}" if instance.id else f"temp.{ext}"
-    return os.path.join('animals/', filename)
+    return os.path.join('images/', filename)
 
 class Animal(models.Model):
     SEX_CHOICES = [
@@ -45,7 +45,7 @@ def rename_photo_on_save(sender, instance, created, **kwargs):
     if created and instance.photo:
         ext = instance.photo.name.split('.')[-1]
         new_filename = f"{instance.id}.{ext}"
-        new_path = os.path.join('animals/', new_filename)
+        new_path = os.path.join('images/', new_filename)
         old_path = instance.photo.path
         new_full_path = os.path.join(settings.MEDIA_ROOT, new_path)
 
