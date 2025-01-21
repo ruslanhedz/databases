@@ -65,14 +65,9 @@ services:
   backup:
     image: alpine:latest
     container_name: backup
+    command: tail -f /dev/null
     volumes:
       - mysql_backup:/backup
-      - ./keyfile.key:/keyfile.key
-      - ./backup.sh:/backup.sh
-      - ./startup.sh:/startup.sh
-    environment:
-      - SCHEDULE=@daily
-    entrypoint: /bin/sh -c "/startup.sh && crond -f"
     networks:
       - mysql_net
 

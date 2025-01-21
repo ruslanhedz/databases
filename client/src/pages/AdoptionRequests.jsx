@@ -1,38 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, ListGroup, Card, Badge, Button } from 'react-bootstrap';
+import api from '../api';
 
 const AdoptionRequests = () => {
-    const adoptionRequests = [
-        {
-            adoption_id: 1,
-            adopter_name: 'John Doe',
-            animal_id: 1,
-            animal_name: 'Bella',
-            status: 'Pending',
-        },
-        {
-            adoption_id: 2,
-            adopter_name: 'Jane Smith',
-            animal_id: 2,
-            animal_name: 'Max',
-            status: 'Approved',
-        },
-        {
-            adoption_id: 3,
-            adopter_name: 'Emily Johnson',
-            animal_id: 3,
-            animal_name: 'Charlie',
-            status: 'Rejected',
-        },
-    ];
+    const [adoptionRequests, setAdoptionRequests] = useState([]);
+
+    useEffect(() => {
+        api.get('/api/adoption-requests/', {
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('access')}`,
+            }
+        }).then ((response) => {
+            setAdoptionRequests(response.data);
+        })
+            .catch((error) => {
+                console.error('Error fetching adoption request', error);
+            })
+    }, []);
+
+    const handleApprove = (adoptionId) => {
+        api.post('/api/adoption-requests/approve/',
+            {adoption_id: adoptionId},
+            {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('access')}`,
+                }
+            }
+        ). then ((response) => {
+            alert('Adoption approved successfully!');
+            window.location.reload();
+        })
+            .catch((error) => {
+                console.error('Error approving adoption request', error);
+                alert('Failed to approve adoption request.');
+            })
+    };
+
+    const handleReject = (adoptionId) => {
+        api.post('/api/adoption-requests/reject/',
+            {adoption_id: adoptionId},
+            {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('access')}`,
+                }
+            }
+        ). then ((response) => {
+            alert('Adoption request rejected!');
+            window.location.reload();
+        })
+            .catch((error) => {
+                console.error('Error approving adoption request', error);
+                alert('Failed to approve adoption request.');
+            })
+    }
 
     const getStatusVariant = (status) => {
         switch (status) {
-            case 'Approved':
+            case 'approved':
                 return 'success';
-            case 'Rejected':
+            case 'rejected':
                 return 'danger';
-            case 'Pending':
+            case 'pending':
                 return 'warning';
             default:
                 return 'secondary';
@@ -51,11 +79,19 @@ const AdoptionRequests = () => {
                                 <div><strong>Adopter Name:</strong> {request.adopter_name}</div>
                                 <div><strong>Animal ID:</strong> {request.animal_id}</div>
                                 <div><strong>Animal Name:</strong> {request.animal_name}</div>
+                                <div><strong>Date of request: </strong> {request.adoption_date}</div>
                             </div>
                             <div className="d-flex align-items-center gap-2">
                                 <Badge bg={getStatusVariant(request.status)} className="me-2">{request.status}</Badge>
-                                <Button variant="success" size="sm">Approve</Button>
-                                <Button variant="danger" size="sm">Reject</Button>
+                                <Button variant="success"
+                                        size="sm"
+                                        onClick={() => handleApprove(request.adoption_id)}
+                                >Approve</Button>
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleReject(request.adoption_id)}
+                                >Reject</Button>
                             </div>
                         </ListGroup.Item>
                     ))}

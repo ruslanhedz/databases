@@ -13,7 +13,7 @@ class AnimalListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Animal
-        fields = ['id', 'name', 'species', 'breed', 'age', 'sex', 'description', 'photo', 'shelter_username']  # Add shelter_username to fields
+        fields = ['id', 'name', 'species', 'breed', 'age', 'sex', 'description', 'photo', 'status', 'shelter_username']  # Add shelter_username to fields
 
     def get_shelter_username(self, obj):
         return obj.shelterId.user.username if obj.shelterId else None  # Fetch the username from the related UserProfile

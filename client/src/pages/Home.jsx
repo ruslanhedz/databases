@@ -20,6 +20,25 @@ const AnimalAdoption = () => {
             });
     }, []);
 
+    const handleAdopt = (animalId) => {
+        api.post('/api/adoption-request/',
+            { animal_id: animalId },
+            {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('access')}`,
+                }
+            }
+        )
+            .then((response) => {
+                alert('Adoption request sent successfully!');
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error('Error sending adoption request:', error);
+                alert('Failed to send adoption request.');
+            });
+    };
+
     return (
         <Container className="my-5">
             <h2 className="text-center mb-4">Zwierzęta do Adopcji</h2>
@@ -37,7 +56,11 @@ const AnimalAdoption = () => {
                                 <Card.Title>{animal.name}</Card.Title>
                                 <Card.Text>{animal.description}</Card.Text>
                                 <div className="d-flex justify-content-between mt-3">
-                                    <Button variant="success" className="me-2">
+                                    <Button
+                                        variant="success"
+                                        className="me-2"
+                                        onClick={() => handleAdopt(animal.id)}
+                                    >
                                         Zaadoptuj
                                     </Button>
                                     <Dropdown>

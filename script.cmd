@@ -49,13 +49,21 @@ pause
 
 docker-compose up -d minio mc
 
+docker-compose build backup
 docker-compose up -d backup
 
 docker cp ./init/certs/master/ca.pem backup:/
+docker cp ./startup.sh backup:/
+docker cp ./backup.sh backup:/
+docker cp ./keyfile.key backup:/
 
 powershell -Command "& { docker exec -it backup sh -c 'apk add --no-cache mysql-client openssl curl && curl https://dl.min.io/client/mc/release/linux-arm64/mc --create-dirs -o ~/minio-binaries/mc && chmod +x ~/minio-binaries/mc && export PATH=$PATH:~/minio-binaries' }"
 
 docker restart backup
+
+powershell -Command "& { docker exec -it backup sh -c 'chmod +x ./startup.sh && chmod +x ./backup.sh && dos2unix ./startup.sh' }"
+
+powershell -Command "& { docker exec -it backup sh -c 'sh ./startup.sh' }"
 
 pause
 

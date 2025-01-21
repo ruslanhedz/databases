@@ -13,7 +13,9 @@ class MasterSlaveRouter:
         if (obj1._meta.app_label == 'animals_management' and obj2._meta.app_label == 'reg_log') or \
                 (obj2._meta.app_label == 'animals_management' and obj1._meta.app_label == 'reg_log') or \
                     (obj1._meta.app_label == 'animals_management' and obj2._meta.app_label == 'auth') or \
-                        (obj2._meta.app_label == 'animals_management' and obj1._meta.app_label == 'auth'):
+                        (obj2._meta.app_label == 'animals_management' and obj1._meta.app_label == 'auth') or \
+                            (obj1._meta.app_label == 'animals_management' and obj2._meta.app_label == 'animals_management') or \
+                                (obj2._meta.app_label == 'animals_management' and obj1._meta.app_label == 'animals_management'):
             return True
         return None
 
