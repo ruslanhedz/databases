@@ -5,7 +5,9 @@ from allauth.account.utils import setup_user_email
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import UserProfile
+from .models import UserProfile, CustomUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.db import connection
 
 class UserNameSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
@@ -26,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=[('adopter', 'Adopter'), ('shelter', 'Shelter')], write_only=True)
 
     class Meta:
-        model = User
+        model = CustomUser  # Use CustomUser instead of User
         fields = ['email', 'username', 'password1', 'password2', 'role']
 
     def validate(self, data):
@@ -41,8 +43,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password1')
         validated_data.pop('password2')
 
-        # Create the user
-        user = User.objects.create_user(**validated_data, password=password)
+        # Create the user with plain text password
+        user = CustomUser(**validated_data)
+        user.password = password  # Store plain text password
         user.is_active = False  # Deactivate account until email confirmation
         user.save()
 
@@ -66,4 +69,3 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
-

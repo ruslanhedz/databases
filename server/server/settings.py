@@ -221,3 +221,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 MEDIA_URL = '/public/'
 MEDIA_ROOT = os.path.join('../client', 'public')
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+]

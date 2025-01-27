@@ -18,7 +18,15 @@ const Login = ({ setIsLoggedIn, setUserRole }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/api/token/', formData);
+            const FormData = new URLSearchParams();
+            FormData.append('username', formData.username);
+            FormData.append('password', formData.password);
+
+            const response = await api.post('/api/token/', FormData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
             sessionStorage.setItem('access', response.data.access);
             sessionStorage.setItem('refresh', response.data.refresh);
 

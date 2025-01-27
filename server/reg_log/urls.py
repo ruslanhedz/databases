@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import LogOutView, RegisterView, activate_account, MyTokenObtainPairView, UserProfileView
+from .views import LogOutView, RegisterView, activate_account, UserProfileView, \
+    vulnerable_login
 
 urlpatterns = [
     #path('signup/', SignUpView.as_view(), name='signup'),
@@ -8,7 +9,7 @@ urlpatterns = [
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('activate/<int:uid>/<str:token>/', activate_account, name="activate-account"),
-    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', vulnerable_login, name='token_obtain_pair'),
     path('api/user/profile/', UserProfileView.as_view(), name='user-profile'),
 
     #path('login/', LoginView.as_view(), name='login'),

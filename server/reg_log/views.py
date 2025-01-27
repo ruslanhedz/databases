@@ -19,7 +19,14 @@ from django.shortcuts import get_object_or_404
 from .models import UserProfile
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserProfileSerializer
+from flask import Flask, request, jsonify
+import sqlite3
+from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
+import subprocess
 
+
+app = Flask(__name__)
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -39,16 +46,43 @@ def activate_account(request, uid, token):
 
     return HttpResponse('Your account is activated! Good luck and love animals!')
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        # Add custom claims
-        token['username'] = user.username
-        return token
+@csrf_exempt
+def vulnerable_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        # Vulnerable raw SQL query
+        query = f"SELECT * FROM auth_user WHERE username = '{username}' AND password = '{password}'"
+        cursor = connection.cursor()
+        cursor.execute(query)
+        #cursor.execute(query, [username, password])
+        user = cursor.fetchone()  # Fetch one result
 
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+        if user:
+            user_obj = User.objects.get(id=user[0])  # Get the User object from the ID
+            refresh = RefreshToken.for_user(user_obj)
+            return JsonResponse({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            })
+        else:
+            return JsonResponse({'error': 'Invalid credentials'}, status=401)
+
+    return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+# class VulnerableLoginView(APIView):
+#     serializer_class = MyTokenObtainPairSerializer
+#
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super().get_token(user)
+#         # Add custom claims
+#         token['username'] = user.username
+#         return token
+#
+# class MyTokenObtainPairView(TokenObtainPairView):
+#     serializer_class = MyTokenObtainPairSerializer
 
 class LogOutView(APIView):
     def post(self, request):
